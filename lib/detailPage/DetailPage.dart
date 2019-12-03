@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatelessWidget{
@@ -15,13 +15,14 @@ class DetailPage extends StatelessWidget{
       ),
       body: Container(
         height: double.infinity,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Color(0XFFFFFFFF)
         ),
         child: Padding(
           padding: EdgeInsets.all(20),
           child: Container(
-            child: Text(
+            child: SelectableText(
               _text,
               style: TextStyle(
                 fontSize: 18.0,
