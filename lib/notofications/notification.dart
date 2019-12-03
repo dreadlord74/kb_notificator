@@ -19,11 +19,11 @@ class Message {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  String toJson() {
     return {
       "title": title,
       "body": body,
       "status": status
-    };
+    }.toString();
   }
 }

@@ -22,12 +22,14 @@ class Notifications{
       status: "waiting"
     );
 
-    await _prefs.setString("notifications", msg.toJson().toString());
+    await _prefs.setString("notifications", "{"+msg.toJson()+"}");
 
-    var msgData = (json.decode(_prefs.getString("notifications")) as Map) as Map<String, dynamic>;
+    var msgData = json.decode(_prefs.getString("notifications"));
 
-    // print(msgData);
+    print(msgData);
 
-    var newMessage = Message.fromJson(msgData);
+    // msgData.forEach((String key, dynamic value){
+    //   // print(Message.fromJson(value));
+    // });
   }
 }
