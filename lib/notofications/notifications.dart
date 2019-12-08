@@ -1,35 +1,32 @@
-import 'dart:convert';
+// import 'dart:convert';
 
+import 'package:kb_notificator/database/database.dart';
 import 'package:kb_notificator/notofications/notification.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Notifications{
-  final List<Message> _notificationsList = [];
-  SharedPreferences _prefs;
+  static addMessage(Message msg) async {
+    final Database _db = await DBProvider.db.database;
 
-  Notifications(){
-    _classInit();
-  }
-
-  _classInit() async{
-    _prefs = await SharedPreferences.getInstance();
-
-    // await _prefs.get("message")'
-
-    Message msg = Message(
-      title: "Тестовый заголовокasdf",
-      body: "Тестовый текстsda",
-      status: "waiting"
+    var result = await _db.rawInsert(
+      "INSERT INTO Messages (title, body, messageID, messageSendTime, messageReceiveTime, status)"
+      " VALUES ('${msg.title}', '${msg.body}', '${msg.messageID}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
     );
 
-    await _prefs.setString("notifications", "{"+msg.toJson()+"}");
+    return result;
+  }
 
-    var msgData = json.decode(_prefs.getString("notifications"));
+  static getMessages() async {
+    final Database _db = await DBProvider.db.database;
 
-    print(msgData);
+    var result = await _db.query(
+      "Messages"
+    );
 
-    // msgData.forEach((String key, dynamic value){
-    //   // print(Message.fromJson(value));
-    // });
+    return result.isNotEmpty 
+      ? result.map(
+          (item) => Message.fromJson(item)
+        ).toList()
+      : [];
   }
 }

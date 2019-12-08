@@ -13,9 +13,19 @@ class HomePage extends StatefulWidget{
 class _HomePage extends State<HomePage>{
   final FirebaseMessaging _fcm = FirebaseMessaging();
 
-  final List<Message> messages = [];
+  List<Message> messages = [];
 
   String _fcmToken;
+
+  _getMessages() async{
+    messages = await Notifications.getMessages();
+
+    // setState(() {
+    //   mess
+    // });
+
+    return true;
+  }
 
   @override
   void initState() {
@@ -23,10 +33,6 @@ class _HomePage extends State<HomePage>{
 
     _fcm.getToken().then((String token){
       _fcmToken = token;
-
-      print(_fcmToken);
-
-      Notifications();
     });
 
     _fcm.configure(
@@ -34,38 +40,48 @@ class _HomePage extends State<HomePage>{
         print("onMessage: $message");
 
         final notification = message["data"];
-        setState(() {
-          messages.add(Message(
+
+        await Notifications.addMessage(
+          Message(
             title: notification["title"],
-            body: notification["body"]
-          ));
+            body: notification["body"],
+            status: "waiting",
+            messageID: 1123,
+            receiveTime: DateTime.now(),
+            sendTime: DateTime.now()
+          )
+        );
+
+        setState(() {
+          _getMessages();
         });
+        
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
 
-        final notification = message["data"];
-        setState(() {
-          messages.add(Message(
-            title: notification["title"],
-            body: notification["body"]
-          ));
-        });
+        // final notification = message["data"];
+        // setState(() {
+        //   messages.add(Message(
+        //     title: notification["title"],
+        //     body: notification["body"]
+        //   ));
+        // });
 
-        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
 
-        final notification = message["data"];
-        setState(() {
-          messages.add(Message(
-            title: notification["title"],
-            body: notification["body"]
-          ));
-        });
+        // final notification = message["data"];
+        // setState(() {
+        //   messages.add(Message(
+        //     title: notification["title"],
+        //     body: notification["body"]
+        //   ));
+        // });
 
-        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
     );
 
@@ -85,8 +101,16 @@ class _HomePage extends State<HomePage>{
       appBar: AppBar(
         title: Text("К&Б - оповещение водителей"),
       ),
-      body: ListView(
-        children: messages.map(_getNotificationListItem).toList(),
+      body: FutureBuilder(
+        builder: (ctx, snapshot){
+          if (snapshot.hasData == null)
+            return ListView();
+
+          return ListView(
+            children: messages.map(_getNotificationListItem).toList(),
+          );
+        },
+        future: _getMessages(),
       )
     );
   }
