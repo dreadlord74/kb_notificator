@@ -49,6 +49,8 @@ class _HomePage extends State<HomePage>{
 
     _fcm.getToken().then((String token){
       _fcmToken = token;
+
+      print(_fcmToken);
     });
 
     _fcm.configure(
