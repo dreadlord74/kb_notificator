@@ -33,6 +33,8 @@ class _HomePage extends State<HomePage>{
 
     _fcm.getToken().then((String token){
       _fcmToken = token;
+
+      print(_fcmToken);
     });
 
     _fcm.configure(
@@ -60,28 +62,44 @@ class _HomePage extends State<HomePage>{
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
 
-        // final notification = message["data"];
-        // setState(() {
-        //   messages.add(Message(
-        //     title: notification["title"],
-        //     body: notification["body"]
-        //   ));
-        // });
+        final notification = message["data"];
+        await Notifications.addMessage(
+          Message(
+            title: notification["title"],
+            body: notification["body"],
+            status: "waiting",
+            messageID: 1123,
+            receiveTime: DateTime.now(),
+            sendTime: DateTime.now()
+          )
+        );
 
-        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        setState(() {
+          _getMessages();
+        });
+
+        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
 
-        // final notification = message["data"];
-        // setState(() {
-        //   messages.add(Message(
-        //     title: notification["title"],
-        //     body: notification["body"]
-        //   ));
-        // });
+        final notification = message["data"];
+        await Notifications.addMessage(
+          Message(
+            title: notification["title"],
+            body: notification["body"],
+            status: "waiting",
+            messageID: 1123,
+            receiveTime: DateTime.now(),
+            sendTime: DateTime.now()
+          )
+        );
 
-        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        setState(() {
+          _getMessages();
+        });
+
+        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
     );
 
