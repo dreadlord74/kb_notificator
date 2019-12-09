@@ -27,6 +27,22 @@ class _HomePage extends State<HomePage>{
     return true;
   }
 
+  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+   if (message.containsKey('data')) {
+     // Handle data message
+     final dynamic data = message['data'];
+   }
+
+   if (message.containsKey('notification')) {
+     // Handle notification message
+     final dynamic notification = message['notification'];
+   }
+
+   print("background: $message");
+
+   // Or do other work.
+ }
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +86,7 @@ class _HomePage extends State<HomePage>{
 
         // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
+      onBackgroundMessage: myBackgroundMessageHandler,
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
 
