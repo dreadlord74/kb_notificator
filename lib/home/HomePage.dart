@@ -27,10 +27,33 @@ class _HomePage extends State<HomePage>{
     return true;
   }
 
-  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+  static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+
+    await Notifications.addMessage(
+      Message(
+        title: "background",
+        body: "bgвыполнилось $message",
+        status: "waiting",
+        messageID: 1123,
+        receiveTime: DateTime.now(),
+        sendTime: DateTime.now()
+      )
+    );
+
    if (message.containsKey('data')) {
      // Handle data message
      final dynamic data = message['data'];
+
+    await Notifications.addMessage(
+      Message(
+        title: data["title"],
+        body: data["body"],
+        status: "waiting",
+        messageID: 1123,
+        receiveTime: DateTime.now(),
+        sendTime: DateTime.now()
+      )
+    );
    }
 
    if (message.containsKey('notification')) {
@@ -78,29 +101,45 @@ class _HomePage extends State<HomePage>{
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
 
-        // final notification = message["data"];
-        // setState(() {
-        //   messages.add(Message(
-        //     title: notification["title"],
-        //     body: notification["body"]
-        //   ));
-        // });
+        final notification = message["data"];
+        await Notifications.addMessage(
+          Message(
+            title: notification["title"],
+            body: notification["body"],
+            status: "waiting",
+            messageID: 1123,
+            receiveTime: DateTime.now(),
+            sendTime: DateTime.now()
+          )
+        );
 
-        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        setState(() {
+          _getMessages();
+        });
+
+        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
       onBackgroundMessage: myBackgroundMessageHandler,
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
 
-        // final notification = message["data"];
-        // setState(() {
-        //   messages.add(Message(
-        //     title: notification["title"],
-        //     body: notification["body"]
-        //   ));
-        // });
+        final notification = message["data"];
+        await Notifications.addMessage(
+          Message(
+            title: notification["title"],
+            body: notification["body"],
+            status: "waiting",
+            messageID: 1123,
+            receiveTime: DateTime.now(),
+            sendTime: DateTime.now()
+          )
+        );
 
-        // Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        setState(() {
+          _getMessages();
+        });
+
+        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
       },
     );
 
@@ -143,10 +182,6 @@ class _HomePage extends State<HomePage>{
         // overflow: TextOverflow.ellipsis,
       ),
       onTap: (){
-        print(message.title);
-        print(message.body);
-        print("/${message.title}/${message.body}");
-
         Navigator.pushNamed(context, "/listDetail/${message.title}/${message.body}");
       },
     );
