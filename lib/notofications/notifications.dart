@@ -29,4 +29,20 @@ class Notifications{
         ).toList()
       : [];
   }
+
+  static getMessageByID(int msgID) async{
+    final Database _db = await DBProvider.db.database;
+
+    var result = await _db.query(
+      "Messages",
+      where: "id = ?",
+      whereArgs: [msgID]
+    );
+    
+    return result.isNotEmpty
+      ? result.map(
+        (item) => Message.fromJson(item)
+      ).toList()[0]
+      : null;
+  }
 }

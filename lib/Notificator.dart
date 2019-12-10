@@ -15,10 +15,12 @@ class Notificator extends StatelessWidget{
       onGenerateRoute: (routeSettings){
         final List<String> _path = routeSettings.name.split("/");
 
+        print(_path);
+
         switch (_path[1]){
           case "listDetail":
             return MaterialPageRoute(
-              builder: (BuildContext context) => DetailPage(_path[2], _path[3]),
+              builder: (BuildContext context) => DetailPage(int.parse(_path[2])),
               settings: routeSettings
             );
         }

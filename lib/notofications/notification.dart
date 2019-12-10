@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Message {
+  final int id;
   final String title;
   final String body;
   final int messageID;
@@ -9,6 +10,7 @@ class Message {
   String status = "waiting";
 
   Message({
+    this.id,
     @required this.title,
     @required this.body,
     @required this.messageID,
@@ -19,6 +21,7 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json){
     return Message(
+      id: json["id"],
       title: json["title"], 
       body: json["body"],
       messageID: json["messageID"],

@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:kb_notificator/CustomTheme.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 
@@ -19,11 +20,6 @@ class _HomePage extends State<HomePage>{
 
   _getMessages() async{
     messages = await Notifications.getMessages();
-
-    // setState(() {
-    //   mess
-    // });
-
     return true;
   }
 
@@ -78,7 +74,7 @@ class _HomePage extends State<HomePage>{
           _getMessages();
         });
 
-        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
@@ -99,7 +95,7 @@ class _HomePage extends State<HomePage>{
           _getMessages();
         });
 
-        Navigator.pushNamed(context, "/listDetail/${notification["title"]}/${notification["body"]}");
+        Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
       },
     );
 
@@ -133,20 +129,31 @@ class _HomePage extends State<HomePage>{
     );
   }
 
+  IconData _getNotificationIconByStatus(String status){
+    switch (status){
+      default:
+        return Icons.message;
+    }
+  }
+
   ListTile _getNotificationListItem(Message message){
     return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: CurstomTheme().getTheme().primaryColor,
+        child: Icon(
+          _getNotificationIconByStatus(message.status),
+          color: Colors.white,
+        ),
+      ),
       title: Text(message.title),
       subtitle: Text(
         message.body,
+        maxLines: 1,
         softWrap: true,
-        // overflow: TextOverflow.ellipsis,
+        overflow: TextOverflow.ellipsis,
       ),
       onTap: (){
-        print(message.title);
-        print(message.body);
-        print("/${message.title}/${message.body}");
-
-        Navigator.pushNamed(context, "/listDetail/${message.title}/${message.body}");
+        Navigator.pushNamed(context, "/listDetail/${message.id}");
       },
     );
   }
