@@ -29,8 +29,6 @@ class _HomePage extends State<HomePage>{
 
     _fcm.getToken().then((String token){
       _fcmToken = token;
-
-      print(_fcmToken);
     });
 
     _fcm.configure(
@@ -125,7 +123,21 @@ class _HomePage extends State<HomePage>{
           );
         },
         future: _getMessages(),
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: CurstomTheme().getTheme().primaryColor,
+        onPressed: (){
+          showDialog(
+            builder: (ctx){
+              return AlertDialog(
+                title: Text("Токен для FCM"),
+                content: SelectableText(_fcmToken),
+              );
+            },
+            context: context
+          );
+        },
+      ),
     );
   }
 
