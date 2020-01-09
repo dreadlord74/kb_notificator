@@ -144,13 +144,13 @@ class _HomePage extends State<HomePage>{
     );
 
     // Запрос разрешения для IOS
-    _fcm.requestNotificationPermissions(
-      const IosNotificationSettings(
-        alert: true,
-        badge: true,
-        sound: true,
-      )
-    );
+    // _fcm.requestNotificationPermissions(
+    //   const IosNotificationSettings(
+    //     alert: true,
+    //     badge: true,
+    //     sound: true,
+    //   )
+    // );
   }
 
   @override 
