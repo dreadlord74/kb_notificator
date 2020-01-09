@@ -5,12 +5,12 @@ import 'package:kb_notificator/notofications/notification.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Notifications{
-  static addMessage(Message msg) async {
+  static addMessage(NotificationMessage msg) async {
     final Database _db = await DBProvider.db.database;
 
     var result = await _db.rawInsert(
-      "INSERT INTO Messages (title, body, messageID, messageSendTime, messageReceiveTime, status)"
-      " VALUES ('${msg.title}', '${msg.body}', '${msg.messageID}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
+      "INSERT INTO Messages (title, body, messageSendTime, messageReceiveTime, status)"
+      " VALUES ('${msg.title}', '${msg.body}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
     );
 
     return result;
@@ -25,8 +25,24 @@ class Notifications{
 
     return result.isNotEmpty 
       ? result.map(
-          (item) => Message.fromJson(item)
+          (item) => NotificationMessage.fromJson(item)
         ).toList()
       : [];
+  }
+
+  static getMessageByID(int msgID) async{
+    final Database _db = await DBProvider.db.database;
+
+    var result = await _db.query(
+      "Messages",
+      where: "id = ?",
+      whereArgs: [msgID]
+    );
+    
+    return result.isNotEmpty
+      ? result.map(
+        (item) => NotificationMessage.fromJson(item)
+      ).toList()[0]
+      : null;
   }
 }

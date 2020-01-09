@@ -17,7 +17,7 @@ class DetailPage extends StatefulWidget{
 
 class _DetailPage extends State<DetailPage>{
   int _msgID;
-  Message _currentMessage;
+  NotificationMessage _currentMessage;
   String _pageTitle = "Просмотр уведомления";
 
   _DetailPage(this._msgID);
