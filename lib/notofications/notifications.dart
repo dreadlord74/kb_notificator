@@ -30,6 +30,18 @@ class Notifications{
       : [];
   }
 
+  static removeMessageByID(int msgID) async {
+    final _db = await DBProvider.db.database;
+
+    var result = await _db.delete(
+      "Messages",
+      where: "id = ?",
+      whereArgs: [msgID]
+    );
+
+    return result;
+  }
+
   static getMessageByID(int msgID) async{
     final Database _db = await DBProvider.db.database;
 
