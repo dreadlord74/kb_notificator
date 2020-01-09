@@ -36,14 +36,17 @@ class DBProvider {
       path,
       version: 2,
       onOpen: (db) async{
-        // await db.execute(
-        //   "DROP TABLE Messages"
-        // );
+        await db.execute(
+          "CREATE TABLE IF NOT EXISTS User ("
+            "id INTEGER PRIMARY KEY NOT NULL,"
+            "phone TEXT NOT NULL,"
+            "token TEXT NOT NULL"
+          ")"
+        );
 
         await db.execute(
           "CREATE TABLE IF NOT EXISTS Messages ("
             "id INTEGER PRIMARY KEY NOT NULL,"
-            "messageID INTEGER NOT NULL,"
             "title TEXT NOT NULL,"
             "body TEXT,"
             "status TEXT NOT NULL,"
@@ -54,9 +57,16 @@ class DBProvider {
       },
       onCreate: (Database db, int version) async {
         await db.execute(
+          "CREATE TABLE IF NOT EXISTS User ("
+            "id INTEGER PRIMARY KEY NOT NULL,"
+            "phone TEXT NOT NULL,"
+            "token TEXT NOT NULL"
+          ")"
+        );
+
+        await db.execute(
           "CREATE TABLE IF NOT EXISTS Messages ("
             "id INTEGER PRIMARY KEY NOT NULL,"
-            "messageID INTEGER NOT NULL,"
             "title TEXT NOT NULL,"
             "body TEXT,"
             "status TEXT NOT NULL,"

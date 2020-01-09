@@ -32,6 +32,7 @@ class _HomePage extends State<HomePage>{
     });
 
     _fcm.configure(
+      onBackgroundMessage: myBackgroundMessageHandler,
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
 
@@ -42,7 +43,6 @@ class _HomePage extends State<HomePage>{
             title: notification["title"],
             body: notification["body"],
             status: "waiting",
-            messageID: 1123,
             receiveTime: DateTime.now(),
             sendTime: DateTime.now()
           )
@@ -53,48 +53,48 @@ class _HomePage extends State<HomePage>{
         });
         
       },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
+      // onLaunch: (Map<String, dynamic> message) async {
+      //   print("onLaunch: $message");
 
-        final notification = message["data"];
-        await Notifications.addMessage(
-          Message(
-            title: notification["title"],
-            body: notification["body"],
-            status: "waiting",
-            messageID: 1123,
-            receiveTime: DateTime.now(),
-            sendTime: DateTime.now()
-          )
-        );
+      //   final notification = message["data"];
+      //   await Notifications.addMessage(
+      //     Message(
+      //       title: notification["title"],
+      //       body: notification["body"],
+      //       status: "waiting",
+      //       messageID: 1123,
+      //       receiveTime: DateTime.now(),
+      //       sendTime: DateTime.now()
+      //     )
+      //   );
 
-        setState(() {
-          _getMessages();
-        });
+      //   setState(() {
+      //     _getMessages();
+      //   });
 
-        Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
+      //   Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
+      // },
+      // onResume: (Map<String, dynamic> message) async {
+      //   print("onResume: $message");
 
-        final notification = message["data"];
-        await Notifications.addMessage(
-          Message(
-            title: notification["title"],
-            body: notification["body"],
-            status: "waiting",
-            messageID: 1123,
-            receiveTime: DateTime.now(),
-            sendTime: DateTime.now()
-          )
-        );
+      //   final notification = message["data"];
+      //   await Notifications.addMessage(
+      //     Message(
+      //       title: notification["title"],
+      //       body: notification["body"],
+      //       status: "waiting",
+      //       messageID: 1123,
+      //       receiveTime: DateTime.now(),
+      //       sendTime: DateTime.now()
+      //     )
+      //   );
 
-        setState(() {
-          _getMessages();
-        });
+      //   setState(() {
+      //     _getMessages();
+      //   });
 
-        Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
-      },
+      //   Navigator.pushNamed(context, "/listDetail/${messages[messages.length - 1].id}");
+      // },
     );
 
     // Запрос разрешения для IOS
@@ -107,6 +107,38 @@ class _HomePage extends State<HomePage>{
     );
   }
 
+  Widget _getListPlaceholder(){
+    return Container(
+      height: double.infinity,
+      padding: EdgeInsets.all(20.0),
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.mail,
+              color: Color(0XFFDBDBDB),
+              size: 50.0,
+            ),
+            Container(
+              width: 200.0,
+              child: Text(
+                "Вы ещё не получали уведомлений.",
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Color(0XFFDBDBDB),
+                ),
+              ),
+            )
+          ],
+        ),
+      )
+    );
+  }
+
   @override 
   Widget build(BuildContext context) {    
     return Scaffold(
@@ -115,8 +147,13 @@ class _HomePage extends State<HomePage>{
       ),
       body: FutureBuilder(
         builder: (ctx, snapshot){
-          if (snapshot.hasData == null)
-            return ListView();
+          if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
+            return _getListPlaceholder();
+          }
+
+          if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
+            return _getListPlaceholder();
+          }
 
           return ListView(
             children: messages.map(_getNotificationListItem).toList(),
@@ -167,6 +204,27 @@ class _HomePage extends State<HomePage>{
       onTap: (){
         Navigator.pushNamed(context, "/listDetail/${message.id}");
       },
+      onLongPress: (){
+        Notifications.removeMessageByID(message.id);
+
+        setState(() {
+          _getMessages();
+        });
+      },
+    );
+  }
+
+  static Future myBackgroundMessageHandler(Map<String, dynamic> message) async {
+    print("onBackground: $message");
+
+    await Notifications.addMessage(
+      Message(
+        title: message["data"].title,
+        body: message["data"].body,
+        status: "waiting",
+        receiveTime: DateTime.now(),
+        sendTime: DateTime.now()
+      )
     );
   }
 }

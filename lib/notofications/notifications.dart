@@ -9,8 +9,8 @@ class Notifications{
     final Database _db = await DBProvider.db.database;
 
     var result = await _db.rawInsert(
-      "INSERT INTO Messages (title, body, messageID, messageSendTime, messageReceiveTime, status)"
-      " VALUES ('${msg.title}', '${msg.body}', '${msg.messageID}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
+      "INSERT INTO Messages (title, body, messageSendTime, messageReceiveTime, status)"
+      " VALUES ('${msg.title}', '${msg.body}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
     );
 
     return result;
@@ -28,6 +28,18 @@ class Notifications{
           (item) => Message.fromJson(item)
         ).toList()
       : [];
+  }
+
+  static removeMessageByID(int msgID) async {
+    final _db = await DBProvider.db.database;
+
+    var result = await _db.delete(
+      "Messages",
+      where: "id = ?",
+      whereArgs: [msgID]
+    );
+
+    return result;
   }
 
   static getMessageByID(int msgID) async{

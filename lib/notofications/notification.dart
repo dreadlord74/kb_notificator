@@ -4,7 +4,6 @@ class Message {
   final int id;
   final String title;
   final String body;
-  final int messageID;
   final DateTime sendTime;
   final DateTime receiveTime;
   String status = "waiting";
@@ -13,7 +12,6 @@ class Message {
     this.id,
     @required this.title,
     @required this.body,
-    @required this.messageID,
     @required this.sendTime,
     @required this.receiveTime,
     this.status
@@ -24,7 +22,6 @@ class Message {
       id: json["id"],
       title: json["title"], 
       body: json["body"],
-      messageID: json["messageID"],
       sendTime: json["sendTime"],
       receiveTime: json["receiveTime"],
       status: json["status"]
@@ -35,7 +32,6 @@ class Message {
     return {
       "title": title, 
       "body": body,
-      "messageID": messageID,
       "sendTime": sendTime,
       "receiveTime": receiveTime,
       "status": status
