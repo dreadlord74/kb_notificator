@@ -20,56 +20,28 @@ class _HomePage extends State<HomePage>{
 
 	String _fcmToken;
 
-	_getMessages() async{
+	Future _getMessages() async{
 		messages = await Notifications.getMessages();
-		return true;
 	}
 
-	static Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+	static Future myBackgroundMessageHandler(Map<String, dynamic> message) async {
+	 	if (message.containsKey('data')) {
+			// Handle data message
+			final dynamic data = message['data'];
 
-		// await Notifications.addMessage(
-		// 	Message(
-		// 		title: "background",
-		// 		body: "bgвыполнилось $message",
-		// 		status: "waiting",
-		// 		messageID: 1123,
-		// 		receiveTime: DateTime.now(),
-		// 		sendTime: DateTime.now()
-		// 	)
-		// );
+			await Notifications.addMessage(
+				NotificationMessage(
+					title: data["title"],
+					body: data["body"],
+					status: "waiting",
+					receiveTime: DateTime.now(),
+					sendTime: DateTime.now()
+				)
+			);
+	 	}
 
-	 if (message.containsKey('data')) {
-		// Handle data message
-		final dynamic data = message['data'];
-
-		await Notifications.addMessage(
-			NotificationMessage(
-				title: data["title"],
-				body: data["body"],
-				status: "waiting",
-				receiveTime: DateTime.now(),
-				sendTime: DateTime.now()
-			)
-		);
-
-		var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-				'your channel id', 'your channel name', 'your channel description',
-			importance: Importance.Max, priority: Priority.Max, ticker: 'ticker');
-		var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-		var platformChannelSpecifics = NotificationDetails(
-			androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-		final localNotifications = FlutterLocalNotificationsPlugin();
-
-		await localNotifications.show(
-			0, data["title"], data["body"], platformChannelSpecifics,
-				payload: 'item x');
-	 }
-
-	 print("background: $message");
-
-	 // Or do other work.
- }
+		print("background: $message");
+ 	}
 
 	@override
 	void initState() {
@@ -132,66 +104,44 @@ class _HomePage extends State<HomePage>{
 	}
 
 	Future onSelectNotification(String payload) async {
-		if (payload != null) {
-			debugPrint('notification payload: ' + payload);
-		}
+		setState(() {
+		  _getMessages();
+		});
+		
+		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
 
-	Widget _getListPlaceholder(){
-        return Container(
-            height: double.infinity,
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                        Icon(
-                            Icons.mail,
-                            color: Color(0XFFDBDBDB),
-                            size: 50.0,
-                        ),
-                        Container(
-                            width: 200.0,
-                            child: Text(
-                                "Вы ещё не получали уведомлений.",
-                                softWrap: true,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Color(0XFFDBDBDB),
-                                ),
-                            ),
-                        )
-                    ],
-                ),
-            )
-        );
-    }
+	@override 
+	Widget build(BuildContext context) {        
+		return Scaffold(
+			appBar: AppBar(
+					title: Text("К&Б - оповещение водителей"),
+					actions: <Widget>[
+						IconButton(
+							icon: Icon(Icons.settings),
+							onPressed: (){
+								Navigator.pushNamed(context, "/settings/");
+							},
+						)
+					],
+			),
+			body: FutureBuilder(
+					builder: (ctx, snapshot){
+							if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
+									return Placeholder();
+							}
 
-    @override 
-    Widget build(BuildContext context) {        
-        return Scaffold(
-            appBar: AppBar(
-                title: Text("К&Б - оповещение водителей"),
-            ),
-            body: FutureBuilder(
-                builder: (ctx, snapshot){
-                    if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
-                        return _getListPlaceholder();
-                    }
+							if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
+									return Placeholder();
+							}
 
-                    if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
-                        return _getListPlaceholder();
-                    }
-
-                    return ListView(
-                        children: messages.map(_getNotificationListItem).toList(),
-                    );
-                },
-                future: _getMessages(),
-            ),
-            floatingActionButton: FloatingActionButton(
+							return ListView(
+									children: messages.reversed.map(_getNotificationListItem).toList(),
+							);
+					},
+					future: _getMessages(),
+			),
+			floatingActionButton: FloatingActionButton(
 				backgroundColor: CurstomTheme().getTheme().primaryColor,
 				onPressed: () async {
 					showDialog(
@@ -205,8 +155,8 @@ class _HomePage extends State<HomePage>{
 					);
 				},
 			),
-      );
-    }
+		);
+	}
 
 	IconData _getNotificationIconByStatus(String status){
 		switch (status){
@@ -233,6 +183,15 @@ class _HomePage extends State<HomePage>{
 			),
 			onTap: (){
 				Navigator.pushNamed(context, "/listDetail/${message.id}");
+			},
+			onLongPress: () async{
+				var res = await Notifications.removeMessageByID(message.id);
+
+				if (res == 1)
+					setState(() {
+						_getMessages();
+					});
+				
 			},
 		);
 	}
