@@ -1,9 +1,11 @@
 // import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:kb_notificator/database/database.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:http/http.dart' as http;
 
 class Notifications{
   static addMessage(NotificationMessage msg) async {
@@ -30,6 +32,20 @@ class Notifications{
 			payload: '${lastMessage.id}');
 
     return result;
+  }
+
+  static setMessageStatusByID(@required int messageID, @required String newStatus) async{
+    final address = "http://gradus-nik.ru/api/?command=driversAppMessageSetStatus";
+
+    switch (newStatus){
+      case "accept":
+
+      break;
+
+      case "decline":
+
+      break;
+    }
   }
 
   static Future<List<NotificationMessage>> getMessages() async {

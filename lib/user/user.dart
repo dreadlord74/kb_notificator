@@ -49,16 +49,20 @@ class User {
   _updateRemoteData(User userData) async{
     var url = "http://gradus-nik.ru/api/?command=driversAppSetUser";
 
-    loadingDialog.show();
+    print({
+      'phone': userData.phone,
+      'token': userData.token
+    });
 
     var result = await http.post(
       url,
-      body: userData.toMap()
+      body: {
+        'phone': userData.phone,
+        'token': userData.token
+      }
     );
 
-    loadingDialog.hide();
-
-    print(result);
+    print(result.body);
   }
 
   updateToken(String newToken) async{
@@ -106,10 +110,14 @@ class User {
   static createUser(User newUser) async{
     final _db = await DBProvider.db.database;
 
-    return await _db.rawInsert(
+    await _db.rawInsert(
       "INSERT INTO User (phone, token)"
       " values ('${newUser.phone}', '${newUser.token}')"
     );
+
+    final _user = await User.getUser();
+
+    await _user._updateRemoteData(newUser);
   }
 
   static Future<User> getUser() async{

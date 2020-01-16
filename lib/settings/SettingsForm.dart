@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:kb_notificator/home/HomePage.dart';
 import 'package:kb_notificator/user/user.dart';
 
 class SettingsForm extends StatefulWidget{
@@ -73,16 +74,45 @@ class _SettingsForm extends State<SettingsForm>{
             height: 25.0,
           ),
           RaisedButton(
-            onPressed: (){
+            onPressed: () async {
               if(_formKey.currentState.validate()){
                 print(phone);
                 print(token);
 
+                if (_curUser == null)
+                  await User.createUser(User(
+                    phone: phone,
+                    token: token
+                  ));
+                else{
+                  await _curUser.updatePhone(phone);
+                  await _curUser.updateToken(token);
+                }
 
-                User.createUser(User(
-                  phone: phone,
-                  token: token
-                ));
+                showDialog(
+                  barrierDismissible: false,
+                  builder: (ctx){
+                    return AlertDialog(
+                      title: Text("Уведомление"),
+                      content: Text(
+                        "Номер телефона успешно сохранён"
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text("Ок"),
+                          onPressed: (){
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomePage()),
+                              (Route<dynamic> route) => false,
+                            );
+                          },
+                        )
+                      ],
+                    );
+                  },
+                  context: context
+                );
               }
             },
             child: Text("Сохранить"),

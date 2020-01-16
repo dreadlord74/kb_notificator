@@ -10,9 +10,10 @@ class Notificator extends StatelessWidget{
 		return MaterialApp(
 			title: "К&Б - оповещение водителей",
 			theme: CurstomTheme().getTheme(),
+      initialRoute: '/',
 			routes: {
-			"/": (ctx) => HomePage(),
-			"settings": (ctx) => Settings(),
+        "/": (ctx) => HomePage(),
+        "settings": (ctx) => Settings(),
 			},
 			onGenerateRoute: (routeSettings){
 				final List<String> _path = routeSettings.name.split("/");
