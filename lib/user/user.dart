@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:kb_notificator/database/database.dart';
 import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
 
 class User {
   final String phone;
   final String token;
 
+  ProgressDialog loadingDialog = ProgressDialog(
+    GlobalKey<ScaffoldState>().currentContext,
+    type: ProgressDialogType.Normal,
+    isDismissible: true,
+    showLogs: true
+  );
+
   User({
     @required this.phone,
     @required this.token
-  });
+  }){
+    loadingDialog.style(
+      message: 'Подождите',
+      borderRadius: 10.0,
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progressTextStyle: TextStyle(
+          color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
+    );
+  }
 
   factory User.fromJson(Map<String, dynamic> json){
     return User(
@@ -25,13 +46,17 @@ class User {
     };
   }
 
-  _updateRemoteDate(User userData) async{
+  _updateRemoteData(User userData) async{
     var url = "http://gradus-nik.ru/api/?command=driversAppSetUser";
+
+    loadingDialog.show();
 
     var result = await http.post(
       url,
       body: userData.toMap()
     );
+
+    loadingDialog.hide();
 
     print(result);
   }
@@ -44,7 +69,7 @@ class User {
       token: newToken
     );
 
-    await _updateRemoteDate(newUserData);
+    await _updateRemoteData(newUserData);
 
     return await _db.update(
       "User",
@@ -62,7 +87,7 @@ class User {
       token: token
     );
 
-    await _updateRemoteDate(newUserData);
+    await _updateRemoteData(newUserData);
 
     return await _db.update(
       "User",
@@ -85,5 +110,16 @@ class User {
       "INSERT INTO User (phone, token)"
       " values ('${newUser.phone}', '${newUser.token}')"
     );
+  }
+
+  static Future<User> getUser() async{
+    final _db = await DBProvider.db.database;
+
+    var res = await _db.query(
+      "User",
+      limit: 1
+    );
+
+    return res.length > 0 ? User.fromJson(res[0]) : null;
   }
 }

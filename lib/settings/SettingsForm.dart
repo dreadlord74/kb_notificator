@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
@@ -12,32 +13,81 @@ class SettingsForm extends StatefulWidget{
 
 class _SettingsForm extends State<SettingsForm>{
   final _formKey = GlobalKey<FormState>();
-	// final User _user;
+  String phone = " ";
+  String token;
+  User _curUser;
 
-	// _SettingsForm (){
-	// 	// user = User();
-	// }
+  @override
+  void initState() {
+    super.initState();
+
+    final FirebaseMessaging _fcm = FirebaseMessaging();
+
+    _fcm.getToken().then((String token) async{
+      await _loadUser();
+      setState(() {
+
+        if (_curUser != null)
+          phone = _curUser.phone;
+
+        this.token = token;
+        print(this.token);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            _getPhoneField(),
-            SizedBox(
-							height: 25.0,
-						),
-						RaisedButton(
-							onPressed: (){
-								print(_formKey.currentState.validate());
-							},
-							child: Text("Сохранить"),
-						)
-          ],
-        ),
+      child: FutureBuilder(
+        future: _loadUser(),
+        builder: (ctx, snapshot){
+          if (snapshot.connectionState == ConnectionState.done){
+            if (snapshot.data != null){
+              this.phone = snapshot.data.phone;
+            }
+
+            return _getForm();
+          }
+          
+          return Container();
+        },
+      ),
+    );
+  }
+
+  Future<User> _loadUser() async{
+    _curUser = await User.getUser();
+
+    return _curUser;
+  }
+
+  Form _getForm(){
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          _getPhoneField(),
+          SizedBox(
+            height: 25.0,
+          ),
+          RaisedButton(
+            onPressed: (){
+              if(_formKey.currentState.validate()){
+                print(phone);
+                print(token);
+
+
+                User.createUser(User(
+                  phone: phone,
+                  token: token
+                ));
+              }
+            },
+            child: Text("Сохранить"),
+          )
+        ],
       ),
     );
   }
@@ -63,13 +113,15 @@ class _SettingsForm extends State<SettingsForm>{
 			validator: (String value){
 				if (value.isEmpty)
 					return "Номер не введён";
-
-				print(value);
 				
 				var regExp = RegExp(r'^\d{3}\d{3}\d{2}\d{2}');
 
 				if (!regExp.hasMatch(value))
 					return "Введён неверный номер телефона";
+
+        setState(() {
+          phone = value;
+        });
 
 				return null;
 			},

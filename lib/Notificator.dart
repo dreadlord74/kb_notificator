@@ -12,6 +12,7 @@ class Notificator extends StatelessWidget{
 			theme: CurstomTheme().getTheme(),
 			routes: {
 			"/": (ctx) => HomePage(),
+			"settings": (ctx) => Settings(),
 			},
 			onGenerateRoute: (routeSettings){
 				final List<String> _path = routeSettings.name.split("/");

@@ -15,7 +15,7 @@ class Notifications{
     );
 
 	var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-			'your channel id', 'your channel name', 'your channel description',
+			'Оповещение', 'Получение оповещений', 'Оповещение для водителей',
 		importance: Importance.Max, priority: Priority.Max, ticker: 'ticker');
 	var iOSPlatformChannelSpecifics = IOSNotificationDetails();
 	var platformChannelSpecifics = NotificationDetails(

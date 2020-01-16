@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:kb_notificator/settings/SettingsForm.dart';
+import 'package:kb_notificator/user/user.dart';
 
 class Settings extends StatefulWidget{
   @override
@@ -10,12 +10,16 @@ class Settings extends StatefulWidget{
 }
 
 class _Settings extends State<Settings>{
+  User curUser;
+
   @override
   void initState() {
     super.initState();
-    
   }
 
+  Future _setCurUser() async{
+    curUser = await User.getUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +27,15 @@ class _Settings extends State<Settings>{
       appBar: AppBar(
         title: Text("Настройки"),
       ),
-      body: SettingsForm(),
+      body: FutureBuilder(
+        builder: (ctx, snapshot){
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Placeholder();
+
+          return SettingsForm();
+        },
+        future: _setCurUser(),
+      ),
     );
   }
 }

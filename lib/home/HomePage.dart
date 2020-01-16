@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kb_notificator/CustomTheme.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
+import 'package:kb_notificator/user/user.dart';
 
 class HomePage extends StatefulWidget{
 	@override
@@ -16,11 +17,18 @@ class _HomePage extends State<HomePage>{
 	final FirebaseMessaging _fcm = FirebaseMessaging();
 	final localNotifications = FlutterLocalNotificationsPlugin();
 
+  User _user;
+
 	List<NotificationMessage> messages = [];
 
 	String _fcmToken;
 
 	Future _getMessages() async{
+    _user = await User.getUser();
+
+    if (_user.token != _fcmToken)
+      _user.updateToken(_fcmToken);
+
 		messages = await Notifications.getMessages();
 	}
 
@@ -49,8 +57,6 @@ class _HomePage extends State<HomePage>{
 
 		_fcm.getToken().then((String token){
 			_fcmToken = token;
-
-			print(_fcmToken);
 		});
 
 		_fcm.configure(
@@ -111,8 +117,71 @@ class _HomePage extends State<HomePage>{
 		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
 
+  Widget _getPlaceholder(){
+    return Container(
+      height: double.infinity,
+      padding: EdgeInsets.all(20.0),
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.mail,
+              color: Color(0XFFDBDBDB),
+              size: 50.0,
+            ),
+            Container(
+              width: 200.0,
+              child: Text(
+                "Вы ещё не получали уведомлений.",
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Color(0XFF000000),  
+                ),
+              ),
+            )
+          ],
+        ),
+      )
+		);
+  }
+
+  Widget _getToSettingsBtn(){
+    return Container(
+      height: double.infinity,
+      padding: EdgeInsets.all(20.0),
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Для получения оповещений вы должны указать номер своего телефона.",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            RaisedButton(
+              child: Text("Указать телефон"),
+              onPressed: (){
+                Navigator.pushNamed(context, "/settings/");
+              },
+            ),
+          ],
+        ),
+      )
+		);
+  }
+
 	@override 
-	Widget build(BuildContext context) {        
+	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
 					title: Text("К&Б - оповещение водителей"),
@@ -126,20 +195,24 @@ class _HomePage extends State<HomePage>{
 					],
 			),
 			body: FutureBuilder(
-					builder: (ctx, snapshot){
-							if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
-									return Placeholder();
-							}
+        builder: (ctx, snapshot){
+          if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
+            return _getPlaceholder();
+          }
 
-							if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
-									return Placeholder();
-							}
+          if (snapshot.connectionState == ConnectionState.done && _user == null){
+            return _getToSettingsBtn();
+          }
 
-							return ListView(
-									children: messages.reversed.map(_getNotificationListItem).toList(),
-							);
-					},
-					future: _getMessages(),
+          if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
+            return _getPlaceholder();
+          }
+
+          return ListView(
+            children: messages.reversed.map(_getNotificationListItem).toList(),
+          );
+        },
+        future: _getMessages(),
 			),
 			floatingActionButton: FloatingActionButton(
 				backgroundColor: CurstomTheme().getTheme().primaryColor,
