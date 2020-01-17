@@ -139,19 +139,18 @@ class _SettingsForm extends State<SettingsForm>{
 				WhitelistingTextInputFormatter.digitsOnly
 			],
 			maxLength: 15,
+      onChanged: (value){
+        phone = value;
+      },
 			keyboardType: TextInputType.phone,
 			validator: (String value){
 				if (value.isEmpty)
 					return "Номер не введён";
 				
-				var regExp = RegExp(r'^\d{3}\d{3}\d{2}\d{2}');
+				// var regExp = RegExp('^\d{3}\d{3}\d{2}\d{2}');
 
-				if (!regExp.hasMatch(value))
-					return "Введён неверный номер телефона";
-
-        setState(() {
-          phone = value;
-        });
+				// if (!regExp.hasMatch(value))
+				// 	return "Введён неверный номер телефона";
 
 				return null;
 			},

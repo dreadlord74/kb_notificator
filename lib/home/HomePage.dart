@@ -106,13 +106,16 @@ class _HomePage extends State<HomePage>{
 
 		localNotifications.initialize(
 			InitializationSettings(settingsAndroid, settingsIOS),
-			onSelectNotification: onSelectNotification);
+			onSelectNotification: onSelectNotification
+    );
 	}
 
 	Future onSelectNotification(String payload) async {
 		setState(() {
 		  _getMessages();
 		});
+
+    print(payload);
 		
 		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
@@ -231,10 +234,30 @@ class _HomePage extends State<HomePage>{
 		);
 	}
 
-	IconData _getNotificationIconByStatus(String status){
+	Icon _getNotificationIconByStatus(String status){
+    print(status);
 		switch (status){
+      case "accept":
+        return Icon(
+					Icons.check,
+					color: Colors.white,
+				);
+
+      break;
+
+      case "decline":
+        return Icon(
+					Icons.cancel,
+					color: Colors.white,
+				);
+      
+      break;
+
 			default:
-				return Icons.message;
+        return Icon(
+					Icons.message,
+					color: Colors.white,
+				);
 		}
 	}
 
@@ -242,10 +265,7 @@ class _HomePage extends State<HomePage>{
 		return ListTile(
 			leading: CircleAvatar(
 				backgroundColor: CurstomTheme().getTheme().primaryColor,
-				child: Icon(
-					_getNotificationIconByStatus(message.status),
-					color: Colors.white,
-				),
+				child: _getNotificationIconByStatus(message.status),
 			),
 			title: Text(message.title),
 			subtitle: Text(
