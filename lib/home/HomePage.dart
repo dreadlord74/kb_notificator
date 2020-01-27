@@ -2,6 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kb_notificator/CustomTheme.dart';
+import 'package:kb_notificator/appBar/AppBarType.dart';
+import 'package:kb_notificator/appBar/customAppBar.dart';
+import 'package:kb_notificator/firstLaunchPlaceholder/fsPlaceholder.dart';
+import 'package:kb_notificator/mainPlaceholder/mainPlaceholder.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 import 'package:kb_notificator/user/user.dart';
@@ -17,6 +21,8 @@ class _HomePage extends State<HomePage>{
 	final FirebaseMessaging _fcm = FirebaseMessaging();
 	final localNotifications = FlutterLocalNotificationsPlugin();
 
+  AppBarType appBarType = AppBarType.transparent;
+
   User _user;
 
 	List<NotificationMessage> messages = [];
@@ -24,11 +30,6 @@ class _HomePage extends State<HomePage>{
 	String _fcmToken;
 
 	Future _getMessages() async{
-    _user = await User.getUser();
-
-    if (_user.token != _fcmToken)
-      _user.updateToken(_fcmToken);
-
 		messages = await Notifications.getMessages();
 	}
 
@@ -58,6 +59,21 @@ class _HomePage extends State<HomePage>{
 		_fcm.getToken().then((String token){
 			_fcmToken = token;
 		});
+
+    User.getUser().then((User user){
+      setState(() {
+        _user = user;
+
+        if (_user != null){
+          if (_user.token != _fcmToken)
+            _user.updateToken(_fcmToken);
+
+          _setAppbarType(AppBarType.transparent);
+        }else{
+          _setAppbarType(AppBarType.white);
+        }
+      });
+    });
 
 		_fcm.configure(
 			onMessage: (Map<String, dynamic> message) async {
@@ -120,118 +136,62 @@ class _HomePage extends State<HomePage>{
 		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
 
-  Widget _getPlaceholder(){
-    return Container(
-      height: double.infinity,
-      padding: EdgeInsets.all(20.0),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.mail,
-              color: Color(0XFFDBDBDB),
-              size: 50.0,
-            ),
-            Container(
-              width: 200.0,
-              child: Text(
-                "Вы ещё не получали уведомлений.",
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16.0,
-                  color: Color(0XFF000000),  
-                ),
-              ),
-            )
-          ],
-        ),
-      )
-		);
-  }
-
-  Widget _getToSettingsBtn(){
-    return Container(
-      height: double.infinity,
-      padding: EdgeInsets.all(20.0),
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "Для получения оповещений вы должны указать номер своего телефона.",
-              style: TextStyle(
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            RaisedButton(
-              child: Text("Указать телефон"),
-              onPressed: (){
-                Navigator.pushNamed(context, "/settings/");
-              },
-            ),
-          ],
-        ),
-      )
-		);
+  _setAppbarType(AppBarType type){
+    setState(() {
+      appBarType = type;
+    });
   }
 
 	@override 
 	Widget build(BuildContext context) {
-		return Scaffold(
-			appBar: AppBar(
-					title: Text("К&Б - оповещение водителей"),
-					actions: <Widget>[
-						IconButton(
-							icon: Icon(Icons.settings),
-							onPressed: (){
-								Navigator.pushNamed(context, "/settings/");
-							},
-						)
-					],
-			),
-			body: FutureBuilder(
-        builder: (ctx, snapshot){
-          if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
-            return _getPlaceholder();
-          }
+    return Stack(
+      children: <Widget>[
+        Image.asset(
+          "assets/main-bg.jpg",
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: CustomAppBar.getAppbar(context, appBarType),
+          body: FutureBuilder(
+            builder: (ctx, snapshot){
+              if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
+                return MainPlaceholder();
+              }
 
-          if (snapshot.connectionState == ConnectionState.done && _user == null){
-            return _getToSettingsBtn();
-          }
+              if (snapshot.connectionState == ConnectionState.done && _user == null){
+                return FSPlaceholder();
+              }
 
-          if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
-            return _getPlaceholder();
-          }
+              if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
+                return MainPlaceholder();
+              }
 
-          return ListView(
-            children: messages.reversed.map(_getNotificationListItem).toList(),
-          );
-        },
-        future: _getMessages(),
-			),
-			floatingActionButton: FloatingActionButton(
-				backgroundColor: CurstomTheme().getTheme().primaryColor,
-				onPressed: () async {
-					showDialog(
-						builder: (ctx){
-							return AlertDialog(
-								title: Text("Токен для FCM"),
-								content: SelectableText(_fcmToken),
-							);
-						},
-						context: context
-					);
-				},
-			),
-		);
+              return ListView(
+                children: messages.reversed.map(_getNotificationListItem).toList(),
+              );
+            },
+            future: _getMessages(),
+          ),
+          // floatingActionButton: FloatingActionButton(
+          //   backgroundColor: CurstomTheme().getTheme().primaryColor,
+          //   onPressed: () async {
+          //     showDialog(
+          //       builder: (ctx){
+          //         return AlertDialog(
+          //           title: Text("Токен для FCM"),
+          //           content: SelectableText(_fcmToken),
+          //         );
+          //       },
+          //       context: context
+          //     );
+          //   },
+          // ),
+        )
+      ],
+    );
 	}
 
 	Icon _getNotificationIconByStatus(String status){

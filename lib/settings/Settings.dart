@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kb_notificator/appBar/AppBarType.dart';
+import 'package:kb_notificator/appBar/customAppBar.dart';
 import 'package:kb_notificator/settings/SettingsForm.dart';
 import 'package:kb_notificator/user/user.dart';
 
@@ -24,8 +26,11 @@ class _Settings extends State<Settings>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Настройки"),
+      appBar: CustomAppBar.getAppbar(
+        context, 
+        AppBarType.white,
+        false,
+        "Настройки"
       ),
       body: FutureBuilder(
         builder: (ctx, snapshot){

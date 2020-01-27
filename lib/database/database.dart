@@ -57,26 +57,26 @@ class DBProvider {
       //       "COMMIT;"
       //     );
       // },
-      onOpen: (db) async{
-        await db.execute(
-          "CREATE TABLE IF NOT EXISTS User ("
-            "id INTEGER PRIMARY KEY NOT NULL,"
-            "phone TEXT NOT NULL,"
-            "token TEXT NOT NULL"
-          ")"
-        );
+      // onOpen: (db) async{
+      //   await db.execute(
+      //     "CREATE TABLE IF NOT EXISTS User ("
+      //       "id INTEGER PRIMARY KEY NOT NULL,"
+      //       "phone TEXT NOT NULL,"
+      //       "token TEXT NOT NULL"
+      //     ")"
+      //   );
 
-        await db.execute(
-          "CREATE TABLE IF NOT EXISTS Messages ("
-            "id INTEGER PRIMARY KEY NOT NULL,"
-            "title TEXT NOT NULL,"
-            "body TEXT,"
-            "status TEXT NOT NULL,"
-            "messageSendTime DATETIME NOT NULL,"
-            "messageReceiveTime DATETIME NOT NULL"
-          ")"
-        );
-      },
+      //   await db.execute(
+      //     "CREATE TABLE IF NOT EXISTS Messages ("
+      //       "id INTEGER PRIMARY KEY NOT NULL,"
+      //       "title TEXT NOT NULL,"
+      //       "body TEXT,"
+      //       "status TEXT NOT NULL,"
+      //       "messageSendTime DATETIME NOT NULL,"
+      //       "messageReceiveTime DATETIME NOT NULL"
+      //     ")"
+      //   );
+      // },
       onCreate: (Database db, int version) async {
         await db.execute(
           "CREATE TABLE IF NOT EXISTS User ("
