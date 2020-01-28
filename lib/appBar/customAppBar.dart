@@ -23,12 +23,23 @@ class CustomAppBar{
             backArrow == true
               ? IconButton(
                   icon: Image.asset(
-                    "assets/ico-back-arrow.png"
+                    "assets/ico-back-arrow.png",
                   ),
                   onPressed: () => Navigator.of(context).pop(),
                 )
-              : Image(
-                  image: AssetImage("assets/appBar-logo.png"),
+              // : Image(
+              //     image: AssetImage(
+              //       "assets/appBar-logo.png",
+              //     ),
+              //     width: 26.0,
+              //     height: 26.0,
+              //   )
+              : Image.asset(
+                  "assets/appBar-logo.png",
+                  width: 26.0,
+                  height: 26.0,
+                  fit: BoxFit.contain,
+                  scale: .6,
                 )
           ),
           title: (title != null
