@@ -56,8 +56,10 @@ flutter:
   assets:
    - assets/appBar-logo.png
    - assets/ico-settings.png
-   - assets/main-bg.jpg
+  #  - assets/main-bg.jpg
    - assets/placeholder-img.png
+   - assets/fs-placeholder-img.png
+   - assets/ico-back-arrow.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -6,6 +6,7 @@ class CustomAppBar{
     BuildContext context, 
     AppBarType type,
     [
+      bool backArrow,
       bool settingsBtn,
       String title,
     ]
@@ -18,17 +19,39 @@ class CustomAppBar{
           bottomRight: Radius.circular(20.0)
         ),
         child: AppBar(
-          leading: Image(
-            image: AssetImage("assets/appBar-logo.png"),
+          leading: (
+            backArrow == true
+              ? IconButton(
+                  icon: Image.asset(
+                    "assets/ico-back-arrow.png"
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : Image(
+                  image: AssetImage("assets/appBar-logo.png"),
+                )
+          ),
+          title: (title != null
+            ? Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black
+                ),
+              )
+            : Container()
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Image(
-                image: AssetImage("assets/ico-settings.png"),
-              ),
-              onPressed: (){
-                Navigator.pushNamed(context, "/settings/");
-              },
+            (settingsBtn == true
+              ? IconButton(
+                icon: Image(
+                  image: AssetImage("assets/ico-settings.png"),
+                ),
+                onPressed: (){
+                  Navigator.pushNamed(context, "/settings/");
+                },
+              )
+              : Container()
             )
           ],
           backgroundColor: (type == AppBarType.white) ? Color(0XFFFFFFFF) : Colors.transparent,

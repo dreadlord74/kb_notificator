@@ -25,22 +25,47 @@ class _Settings extends State<Settings>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar.getAppbar(
-        context, 
-        AppBarType.white,
-        false,
-        "Настройки"
-      ),
-      body: FutureBuilder(
-        builder: (ctx, snapshot){
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Placeholder();
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFFE4DAD9),
+                const Color(0xFFE5E4EE),
+              ],
+              stops: [
+                0.0, 1.0
+              ],
+              tileMode: TileMode.clamp
+            ),
+            // color: Color(0xFFE4DAD9)
+          ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: CustomAppBar.getAppbar(
+            context, 
+            AppBarType.white,
+            true,
+            false,
+            "Настройки"
+          ),
+          body: FutureBuilder(
+            builder: (ctx, snapshot){
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Placeholder();
 
-          return SettingsForm();
-        },
-        future: _setCurUser(),
-      ),
+              return SettingsForm();
+            },
+            future: _setCurUser(),
+          ),
+        )
+      ],
     );
   }
 }

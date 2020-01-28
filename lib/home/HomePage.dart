@@ -10,6 +10,11 @@ import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 import 'package:kb_notificator/user/user.dart';
 
+enum MainBGType{
+  image,
+  gradient
+}
+
 class HomePage extends StatefulWidget{
 	@override
 	State<HomePage> createState() {
@@ -21,6 +26,8 @@ class _HomePage extends State<HomePage>{
 	final FirebaseMessaging _fcm = FirebaseMessaging();
 	final localNotifications = FlutterLocalNotificationsPlugin();
 
+  MainBGType bgType = MainBGType.gradient;
+
   AppBarType appBarType = AppBarType.transparent;
 
   User _user;
@@ -28,6 +35,12 @@ class _HomePage extends State<HomePage>{
 	List<NotificationMessage> messages = [];
 
 	String _fcmToken;
+
+  // _setMainBG(MainBGType type){
+  //   setState(() {
+  //     bgType = type;
+  //   });
+  // }
 
 	Future _getMessages() async{
 		messages = await Notifications.getMessages();
@@ -64,14 +77,9 @@ class _HomePage extends State<HomePage>{
       setState(() {
         _user = user;
 
-        if (_user != null){
+        if (_user != null)
           if (_user.token != _fcmToken)
             _user.updateToken(_fcmToken);
-
-          _setAppbarType(AppBarType.transparent);
-        }else{
-          _setAppbarType(AppBarType.white);
-        }
       });
     });
 
@@ -136,25 +144,49 @@ class _HomePage extends State<HomePage>{
 		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
 
-  _setAppbarType(AppBarType type){
-    setState(() {
-      appBarType = type;
-    });
-  }
+  // _setAppbarType(AppBarType type){
+  //   setState(() {
+  //     appBarType = type;
+  //   });
+  // }
 
 	@override 
 	Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        Image.asset(
-          "assets/main-bg.jpg",
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          fit: BoxFit.cover,
+        (
+          bgType == MainBGType.image
+            ?
+              Image.asset(
+                "assets/main-bg.jpg",
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
+              )
+            :
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFFE4DAD9),
+                      const Color(0xFFE5E4EE),
+                    ],
+                    stops: [
+                      0.0, 1.0
+                    ],
+                    tileMode: TileMode.clamp
+                  ),
+                  // color: Color(0xFFE4DAD9)
+                ),
+              )
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: CustomAppBar.getAppbar(context, appBarType),
+          appBar: CustomAppBar.getAppbar(context, appBarType, false, true),
           body: FutureBuilder(
             builder: (ctx, snapshot){
               if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
