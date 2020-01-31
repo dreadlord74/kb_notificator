@@ -34,29 +34,61 @@ class DBProvider {
 
     return await openDatabase(
       path,
-      version: 2,
-      onOpen: (db) async{
-        // await db.execute(
-        //   "DROP TABLE Messages"
-        // );
+      version: 3,
+      // onUpgrade: (Database db, int oldVersion, int newVersion) async{
+      //   if (newVersion == 3)
+      //     await db.execute(
+      //       "BEGIN TRANSACTION;"
+      //       "CREATE TEMPORARY TABLE Messages__backcup(id, title, body, status, messageSendTime, messageReceiveTime);"
+      //       "INSERT INTO Messages__backcup SELECT id, title, body, status, messageSendTime, messageReceiveTime FROM Messages;"
+      //       "DROP TABLE Messages;"
+
+      //       "CREATE TABLE IF NOT EXISTS Messages ("
+      //         "id INTEGER PRIMARY KEY NOT NULL,"
+      //         "title TEXT NOT NULL,"
+      //         "body TEXT,"
+      //         "status TEXT NOT NULL,"
+      //         "messageSendTime DATETIME NOT NULL,"
+      //         "messageReceiveTime DATETIME NOT NULL"
+      //       ")"
+
+      //       "INSERT INTO Messages id, title, body, status, messageSendTime, messageReceiveTime SELECT id, title, body, status, messageSendTime, messageReceiveTime FROM Messages__backcup;"
+      //       "DROP TABLE Messages__backcup;"
+      //       "COMMIT;"
+      //     );
+      // },
+      // onOpen: (db) async{
+      //   await db.execute(
+      //     "CREATE TABLE IF NOT EXISTS User ("
+      //       "id INTEGER PRIMARY KEY NOT NULL,"
+      //       "phone TEXT NOT NULL,"
+      //       "token TEXT NOT NULL"
+      //     ")"
+      //   );
+
+      //   await db.execute(
+      //     "CREATE TABLE IF NOT EXISTS Messages ("
+      //       "id INTEGER PRIMARY KEY NOT NULL,"
+      //       "title TEXT NOT NULL,"
+      //       "body TEXT,"
+      //       "status TEXT NOT NULL,"
+      //       "messageSendTime DATETIME NOT NULL,"
+      //       "messageReceiveTime DATETIME NOT NULL"
+      //     ")"
+      //   );
+      // },
+      onCreate: (Database db, int version) async {
+        await db.execute(
+          "CREATE TABLE IF NOT EXISTS User ("
+            "id INTEGER PRIMARY KEY NOT NULL,"
+            "phone TEXT NOT NULL,"
+            "token TEXT NOT NULL"
+          ")"
+        );
 
         await db.execute(
           "CREATE TABLE IF NOT EXISTS Messages ("
             "id INTEGER PRIMARY KEY NOT NULL,"
-            "messageID INTEGER NOT NULL,"
-            "title TEXT NOT NULL,"
-            "body TEXT,"
-            "status TEXT NOT NULL,"
-            "messageSendTime DATETIME NOT NULL,"
-            "messageReceiveTime DATETIME NOT NULL"
-          ")"
-        );
-      },
-      onCreate: (Database db, int version) async {
-        await db.execute(
-          "CREATE TABLE IF NOT EXISTS Messages ("
-            "id INTEGER PRIMARY KEY NOT NULL,"
-            "messageID INTEGER NOT NULL,"
             "title TEXT NOT NULL,"
             "body TEXT,"
             "status TEXT NOT NULL,"
