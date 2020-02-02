@@ -42,8 +42,16 @@ class _HomePage extends State<HomePage>{
   //   });
   // }
 
-	Future _getMessages() async{
-		messages = await Notifications.getMessages();
+	Future<List<NotificationMessage>> _getMessages() async{
+
+    setState(() async {
+      messages = await Notifications.getMessages();
+
+      if (messages.length > 0)
+        appBarType = AppBarType.white;
+    });
+
+    return messages;
 	}
 
 	static Future myBackgroundMessageHandler(Map<String, dynamic> message) async {
@@ -99,9 +107,8 @@ class _HomePage extends State<HomePage>{
 					)
 				);
 
-				setState(() {
-					_getMessages();
-				});
+				
+				_getMessages();
 				
 			},
 			onLaunch: (Map<String, dynamic> message) async {
@@ -135,20 +142,10 @@ class _HomePage extends State<HomePage>{
 	}
 
 	Future onSelectNotification(String payload) async {
-		setState(() {
-		  _getMessages();
-		});
-
-    print(payload);
+		_getMessages();
 		
 		await Navigator.pushNamed(context, "/listDetail/$payload");
 	}
-
-  // _setAppbarType(AppBarType type){
-  //   setState(() {
-  //     appBarType = type;
-  //   });
-  // }
 
 	@override 
 	Widget build(BuildContext context) {
@@ -180,7 +177,6 @@ class _HomePage extends State<HomePage>{
                     ],
                     tileMode: TileMode.clamp
                   ),
-                  // color: Color(0xFFE4DAD9)
                 ),
               )
         ),
@@ -269,15 +265,13 @@ class _HomePage extends State<HomePage>{
 			onTap: (){
 				Navigator.pushNamed(context, "/listDetail/${message.id}");
 			},
-			onLongPress: () async{
-				var res = await Notifications.removeMessageByID(message.id);
+			// onLongPress: () async{
+			// 	var res = await Notifications.removeMessageByID(message.id);
 
-				if (res == 1)
-					setState(() {
-						_getMessages();
-					});
+			// 	if (res == 1)
+			// 		_getMessages();
 				
-			},
+			// },
 		);
 	}
 }

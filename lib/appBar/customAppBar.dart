@@ -27,19 +27,21 @@ class CustomAppBar{
                   ),
                   onPressed: () => Navigator.of(context).pop(),
                 )
-              // : Image(
-              //     image: AssetImage(
-              //       "assets/appBar-logo.png",
-              //     ),
-              //     width: 26.0,
-              //     height: 26.0,
-              //   )
-              : Image.asset(
-                  "assets/appBar-logo.png",
-                  width: 26.0,
-                  height: 26.0,
-                  fit: BoxFit.contain,
-                  scale: .6,
+              : Container(
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          "assets/appBar-logo.png",
+                          width: 26.0,
+                          height: 26.0,
+                          fit: BoxFit.contain,
+                        )
+                      ],
+                    ),
+                  ),
                 )
           ),
           title: (title != null
@@ -55,8 +57,11 @@ class CustomAppBar{
           actions: <Widget>[
             (settingsBtn == true
               ? IconButton(
-                icon: Image(
-                  image: AssetImage("assets/ico-settings.png"),
+                icon: Image.asset(
+                  "assets/ico-settings.png",
+                  fit: BoxFit.contain,
+                  width: 16.0,
+                  height: 16.0,
                 ),
                 onPressed: (){
                   Navigator.pushNamed(context, "/settings/");

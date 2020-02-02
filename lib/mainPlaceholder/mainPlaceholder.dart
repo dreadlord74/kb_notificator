@@ -18,7 +18,12 @@ class MainPlaceholder extends StatelessWidget{
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset("assets/placeholder-img.png"),
+            Image.asset(
+              "assets/placeholder-img.png",
+              width: 111.0,
+              height: 124.0,
+              fit: BoxFit.contain,
+            ),
             Padding(
               padding: EdgeInsets.only(
                 top: 39.0,
