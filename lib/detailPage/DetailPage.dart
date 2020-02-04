@@ -1,6 +1,8 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kb_notificator/CustomTheme.dart';
+import 'package:kb_notificator/appBar/AppBarType.dart';
+import 'package:kb_notificator/appBar/customAppBar.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 
@@ -31,95 +33,125 @@ class _DetailPage extends State<DetailPage>{
 
   @override
   Widget build(ctx){
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_pageTitle),
-      ),
-      body: Container(
-        height: double.infinity,
+    return Stack(
+    children: <Widget>[
+      Container(
         width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
-          color: Color(0XFFFFFFFF)
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFFE4DAD9),
+              const Color(0xFFE5E4EE),
+            ],
+            stops: [
+              0.0, 1.0
+            ],
+            tileMode: TileMode.clamp
+          ),
+          // color: Color(0xFFE4DAD9)
         ),
-        child: FutureBuilder(
-          builder: (ctx, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done)
-              return Container();
+      ),
+      Scaffold(
+        appBar: CustomAppBar.getAppbar(
+          context, 
+          AppBarType.white,
+          true,
+          false,
+          _pageTitle
+        ),
+        body: Container(
+          height: double.infinity,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 22),
+          child: FutureBuilder(
+            builder: (ctx, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done)
+                return Container();
 
-            return Padding(
-              padding: EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: SelectableText(
-                        _currentMessage.body,
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          height: 1.4
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _currentMessage.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(
+                    height: 22,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: Color(0xFF0000000d)
+                        ),
+                        bottom: BorderSide(
+                          color: Color(0xFF0000000d)
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Color(0XFFDBDBDB),
-
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 16
+                            ),
+                            child: Image.asset(
+                              "assets/ico-location.png",
+                              width: 10,
+                              height: 14,
+                            ),
+                          ),
+                          flex: 1,
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.all(15),
-                          child: _getTextByStatus(_currentMessage.status),
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              right: 16
+                            ),
+                            child: Text(
+                              _currentMessage.body,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                height: 16 / 12
+                              ),
+                            ),
+                          ),
+                          flex: 2
                         ),
-                      ),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            child: Text(
+                              "${_currentMessage.receiveTime.hour}:${_currentMessage.receiveTime.minute}"
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    _getMessageButtons()
-                  ],
-                ),
-              )
-            );
-          },
-          future: _setCurMessage(),
+                  ),
+                  SizedBox(
+                    height: 27,
+                  ),
+                  _getMessageButtons()
+                ],
+              );
+            },
+            future: _setCurMessage(),
+          )
         )
       )
+      ]
     );
-  }
-
-  Text _getTextByStatus(String messageStatus){
-    switch (messageStatus){
-      case "accept":
-        return Text(
-          "Вы ответили согласием на это уведомление.",
-          style: TextStyle(
-            fontSize: 15
-          )
-        );
-      break;
-
-      case "decline":
-        return Text(
-          "Вы ответили отказом на это уведомление.",
-          style: TextStyle(
-            fontSize: 15
-          )
-        );
-      break;
-
-
-      default:
-        return Text(
-          "Вы ещё не дали ответ на это уведомление.",
-          style: TextStyle(
-            fontSize: 15
-          )
-        );
-    }
   }
 
   _getMessageButtons(){

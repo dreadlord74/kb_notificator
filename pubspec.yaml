@@ -60,6 +60,10 @@ flutter:
    - assets/placeholder-img.png
    - assets/fs-placeholder-img.png
    - assets/ico-back-arrow.png
+   - assets/ico-new-message.png
+   - assets/ico-message.png
+   - assets/ico-arrow.png
+   - assets/ico-location.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

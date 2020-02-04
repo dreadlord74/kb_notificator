@@ -42,16 +42,19 @@ class _HomePage extends State<HomePage>{
   //   });
   // }
 
-	Future<List<NotificationMessage>> _getMessages() async{
+	void _getMessages(){
+    List<NotificationMessage> _messages;
 
-    setState(() async {
-      messages = await Notifications.getMessages();
+    Notifications.getMessages().then((value){
+      if (value == null) return;
 
-      if (messages.length > 0)
+      _messages = value;
+
+      setState(() {
+        messages = _messages;
         appBarType = AppBarType.white;
+      });
     });
-
-    return messages;
 	}
 
 	static Future myBackgroundMessageHandler(Map<String, dynamic> message) async {
@@ -88,6 +91,14 @@ class _HomePage extends State<HomePage>{
         if (_user != null)
           if (_user.token != _fcmToken)
             _user.updateToken(_fcmToken);
+      });
+    });
+
+    Notifications.getMessages().then((value){
+      if (value == null) return;
+      setState(() {
+        messages = value;
+        appBarType = AppBarType.white;
       });
     });
 
@@ -183,26 +194,31 @@ class _HomePage extends State<HomePage>{
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: CustomAppBar.getAppbar(context, appBarType, false, true),
-          body: FutureBuilder(
-            builder: (ctx, snapshot){
-              if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
-                return MainPlaceholder();
-              }
+          // body: FutureBuilder(
+          //   builder: (ctx, snapshot){
+          //     if (snapshot.hasData == null || snapshot.connectionState == ConnectionState.waiting){
+          //       return MainPlaceholder();
+          //     }
 
-              if (snapshot.connectionState == ConnectionState.done && _user == null){
-                return FSPlaceholder();
-              }
+          //     if (snapshot.connectionState == ConnectionState.done && _user == null){
+          //       return FSPlaceholder();
+          //     }
 
-              if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
-                return MainPlaceholder();
-              }
+          //     if (snapshot.connectionState == ConnectionState.done && messages.length == 0){
+          //       return MainPlaceholder();
+          //     }
 
-              return ListView(
-                children: messages.reversed.map(_getNotificationListItem).toList(),
-              );
-            },
-            future: _getMessages(),
-          ),
+          //     return ListView(
+          //       children: messages.reversed.map(_getNotificationListItem).toList(),
+          //     );
+          //   },
+          //   future: _getMessages(),
+          // ),
+          body: _user == null
+                ? FSPlaceholder()
+                : messages.length == 0
+                  ? MainPlaceholder()
+                  : _getMessagesContainer()
           // floatingActionButton: FloatingActionButton(
           //   backgroundColor: CurstomTheme().getTheme().primaryColor,
           //   onPressed: () async {
@@ -221,6 +237,68 @@ class _HomePage extends State<HomePage>{
       ],
     );
 	}
+
+  ListView _getMessagesContainer(){
+    return ListView(
+      padding: EdgeInsets.symmetric(vertical: 9, horizontal: 0),
+      children: ListTile.divideTiles(
+        context: context,
+        tiles: <ListTile>[
+          messages[0].status == "waiting"
+            ? ListTile(
+              contentPadding: EdgeInsets.all(22),
+              leading: Image.asset(
+                "assets/ico-new-message.png",
+                width: 32.0,
+                height: 36.0,
+              ),
+              title: Text(
+                "Последняя заявка",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400
+                ),
+              ),
+              trailing: Image.asset(
+                "assets/ico-arrow.png",
+                width: 12.0,
+                height: 8.0,
+              ),
+              onTap: (){
+                Navigator.pushNamed(context, "/listDetail/${messages[0].id}");
+              },
+              
+            )
+            : ListTile(),
+          ListTile(
+            contentPadding: EdgeInsets.all(22),
+            leading: Image.asset(
+              "assets/ico-message.png",
+              width: 32.0,
+              height: 36.0,
+            ),
+            title: Text(
+              "Все заявки",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w400
+              ),
+            ),
+            trailing: Image.asset(
+              "assets/ico-arrow.png",
+              width: 12.0,
+              height: 8.0,
+            ),
+            onTap: (){
+              // Navigator.pushNamed(context, "/listDetail/${messages[0].id}");
+            },
+          )
+        ]
+      ).toList()
+    );
+  }
 
 	Icon _getNotificationIconByStatus(String status){
     print(status);
@@ -265,13 +343,13 @@ class _HomePage extends State<HomePage>{
 			onTap: (){
 				Navigator.pushNamed(context, "/listDetail/${message.id}");
 			},
-			// onLongPress: () async{
-			// 	var res = await Notifications.removeMessageByID(message.id);
+			onLongPress: () async{
+				var res = await Notifications.removeMessageByID(message.id);
 
-			// 	if (res == 1)
-			// 		_getMessages();
+				if (res == 1)
+					_getMessages();
 				
-			// },
+			},
 		);
 	}
 }

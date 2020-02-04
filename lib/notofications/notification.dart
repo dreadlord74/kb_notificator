@@ -22,8 +22,8 @@ class NotificationMessage {
       id: json["id"],
       title: json["title"], 
       body: json["body"],
-      sendTime: json["sendTime"],
-      receiveTime: json["receiveTime"],
+      sendTime: DateTime.parse(json["messageSendTime"]),
+      receiveTime: DateTime.parse(json["messageReceiveTime"]),
       status: json["status"]
     );
   }

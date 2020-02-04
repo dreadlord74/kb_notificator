@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 
 class BorderedBtn extends StatefulWidget{
-  String _text;
-  Function _onPressed;
+  final String _text;
+  final Function _onPressed;
 
   BorderedBtn(
-    String text,
-    Function onPressed
-  ){
-    _text = text;
-    _onPressed = onPressed;
-  }
+    this._text,
+    this._onPressed
+  );
 
   @override
   State<BorderedBtn> createState() {

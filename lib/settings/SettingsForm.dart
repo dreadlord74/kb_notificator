@@ -107,44 +107,6 @@ class _SettingsForm extends State<SettingsForm>{
                     },
                   )
                 );
-
-                // showDialog(
-                //   barrierDismissible: false,
-                //   builder: (ctx){
-                //     return AlertDialog(
-                //       title: Text(
-                //         "Уведомление",
-                //         style: TextStyle(
-                //           fontSize: 12,
-                //           fontWeight: FontWeight.w400,
-                //           color: Color(0xFFADAEB5),
-                //         ),
-                //       ),
-                //       content: Text(
-                //         "Номер телефона успешно сохранён"
-                //       ),
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.only(
-                //           topLeft: Radius.circular(20.0),
-                //           topRight: Radius.circular(20.0),
-                //         )
-                //       ),
-                //       actions: <Widget>[
-                //         FlatButton(
-                //           child: Text("Ок"),
-                //           onPressed: (){
-                //             Navigator.pushAndRemoveUntil(
-                //               context,
-                //               MaterialPageRoute(builder: (context) => HomePage()),
-                //               (Route<dynamic> route) => false,
-                //             );
-                //           },
-                //         )
-                //       ],
-                //     );
-                //   },
-                //   context: context
-                // );
               }
             }
           ),
@@ -187,8 +149,10 @@ class _SettingsForm extends State<SettingsForm>{
 				
 				// var regExp = RegExp('^\d{3}\d{3}\d{2}\d{2}');
 
-				// if (!regExp.hasMatch(value))
-				// 	return "Введён неверный номер телефона";
+        print(value.length);
+
+				if (value.length < 10)
+					return "Введён неверный номер телефона";
 
 				return null;
 			},

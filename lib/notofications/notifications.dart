@@ -9,6 +9,10 @@ class Notifications{
   static addMessage(NotificationMessage msg) async {
     final Database _db = await DBProvider.db.database;
 
+    await Notifications.declineAnotherMessagesStatus();
+
+    print(msg.receiveTime);
+
     var result = await _db.rawInsert(
       "INSERT INTO Messages (title, body, messageSendTime, messageReceiveTime, status)"
       " VALUES ('${msg.title}', '${msg.body}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
@@ -32,36 +36,35 @@ class Notifications{
     return result;
   }
 
-  static Future<bool> setMessageStatusByID(int messageID, String newStatus, [String comment]) async{
-    final url = "http://gradus-nik.ru/api/?command=driversAppMessageSetStatus";
-    final _curUser = await User.getUser();
+  static Future<bool> setMessageStatusByID(int messageID, String newStatus, [String comment, bool isLocalChange = false]) async{
 
-    http.Response res;
+    if (!isLocalChange){
+      final url = "http://gradus-nik.ru/api/?command=driversAppMessageSetStatus";
+      final _curUser = await User.getUser();
 
-    switch (newStatus){
-      case "accept":
-        res = await http.post(
-          url,
-          body: {
-            "phone": _curUser.phone,
-            "status": "accept"
-          }
-        );
-      break;
+      switch (newStatus){
+        case "accept":
+          await http.post(
+            url,
+            body: {
+              "phone": _curUser.phone,
+              "status": "accept"
+            }
+          );
+        break;
 
-      case "decline":
-        res = await http.post(
-          url,
-          body: {
-            "phone": _curUser.phone,
-            "status": "decline",
-            "comment": comment
-          }
-        );
-      break;
+        case "decline":
+          await http.post(
+            url,
+            body: {
+              "phone": _curUser.phone,
+              "status": "decline",
+              "comment": comment
+            }
+          );
+        break;
+      }
     }
-
-    print(res.body);
 
     var changeRes = await changeMessageStatusByID(messageID, newStatus);
 
@@ -88,7 +91,7 @@ class Notifications{
     return result.isNotEmpty 
       ? result.map(
           (item) => NotificationMessage.fromJson(item)
-        ).toList()
+        ).toList().reversed.toList()
       : [];
   }
 
@@ -121,16 +124,26 @@ class Notifications{
   }
 
   static Future<NotificationMessage> getLastMessage() async {
-	final Database _db = await DBProvider.db.database;
+    final Database _db = await DBProvider.db.database;
 
-	var result = await _db.query(
-		"Messages",
-	);
+    var result = await _db.query(
+      "Messages",
+    );
 
 	return result.isNotEmpty
 		? result.map(
 			(item) => NotificationMessage.fromJson(item)
 		).toList()[result.length - 1]
 		: null;
+  }
+
+  static Future<void> declineAnotherMessagesStatus() async {
+    var _messages = await Notifications.getMessages();
+
+    _messages.forEach((msg) async{
+
+      if (msg.status == "waiting")
+        await Notifications.setMessageStatusByID(msg.id, "decline", "", true);
+    });
   }
 }
