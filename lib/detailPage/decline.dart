@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kb_notificator/appBar/AppBarType.dart';
 import 'package:kb_notificator/appBar/customAppBar.dart';
+import 'package:kb_notificator/detailPage/declineForm.dart';
 
 class Decline extends StatefulWidget{
   final int _msgID;
@@ -71,6 +72,10 @@ class _Decline extends State<Decline>{
                     ),
                   )
                 ),
+                SizedBox(
+                  height: 20,
+                ),
+                DeclineForm(_msgID)
               ],
             ),
           ),

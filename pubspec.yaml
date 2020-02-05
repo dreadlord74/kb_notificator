@@ -64,6 +64,8 @@ flutter:
    - assets/ico-message.png
    - assets/ico-arrow.png
    - assets/ico-location.png
+   - assets/ico-decline.png
+   - assets/ico-accept.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

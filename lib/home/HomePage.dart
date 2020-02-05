@@ -247,63 +247,66 @@ class _HomePage extends State<HomePage>{
   ListView _getMessagesContainer(){
     print(messages[0].status);
     print("${messages[0].receiveTime.hour}:${messages[0].receiveTime.minute}");
+
+    List<ListTile> _ltArray = [];
+
+    if (messages[0].status == "waiting")
+      _ltArray.add(ListTile(
+        contentPadding: EdgeInsets.all(22),
+        leading: Image.asset(
+          "assets/ico-new-message.png",
+          width: 32.0,
+          height: 36.0,
+        ),
+        title: Text(
+          "Последняя заявка",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.w400
+          ),
+        ),
+        trailing: Image.asset(
+          "assets/ico-arrow.png",
+          width: 12.0,
+          height: 8.0,
+        ),
+        onTap: (){
+          Navigator.pushNamed(context, "/listDetail/${messages[0].id}");
+        },
+        
+      ));
+
+    _ltArray.add(ListTile(
+      contentPadding: EdgeInsets.all(22),
+      leading: Image.asset(
+        "assets/ico-message.png",
+        width: 32.0,
+        height: 36.0,
+      ),
+      title: Text(
+        "Все заявки",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 14,
+          fontWeight: FontWeight.w400
+        ),
+      ),
+      trailing: Image.asset(
+        "assets/ico-arrow.png",
+        width: 12.0,
+        height: 8.0,
+      ),
+      onTap: (){
+        Navigator.pushNamed(context, "/allMessages/");
+      },
+    ));
+
     return ListView(
       padding: EdgeInsets.symmetric(vertical: 9, horizontal: 0),
       children: ListTile.divideTiles(
         context: context,
-        tiles: <ListTile>[
-          messages[0].status == "waiting"
-            ? ListTile(
-              contentPadding: EdgeInsets.all(22),
-              leading: Image.asset(
-                "assets/ico-new-message.png",
-                width: 32.0,
-                height: 36.0,
-              ),
-              title: Text(
-                "Последняя заявка",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400
-                ),
-              ),
-              trailing: Image.asset(
-                "assets/ico-arrow.png",
-                width: 12.0,
-                height: 8.0,
-              ),
-              onTap: (){
-                Navigator.pushNamed(context, "/listDetail/${messages[0].id}");
-              },
-              
-            )
-            : ListTile(),
-          ListTile(
-            contentPadding: EdgeInsets.all(22),
-            leading: Image.asset(
-              "assets/ico-message.png",
-              width: 32.0,
-              height: 36.0,
-            ),
-            title: Text(
-              "Все заявки",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w400
-              ),
-            ),
-            trailing: Image.asset(
-              "assets/ico-arrow.png",
-              width: 12.0,
-              height: 8.0,
-            ),
-            onTap: (){
-              // Navigator.pushNamed(context, "/listDetail/${messages[0].id}");
-            },
-          )
-        ]
+        tiles: _ltArray
       ).toList()
     );
   }

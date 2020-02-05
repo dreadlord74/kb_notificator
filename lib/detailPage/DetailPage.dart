@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:kb_notificator/appBar/AppBarType.dart';
 import 'package:kb_notificator/appBar/customAppBar.dart';
 import 'package:kb_notificator/btns.dart';
+import 'package:kb_notificator/generalDialog/generalDialog.dart';
+import 'package:kb_notificator/home/HomePage.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 
@@ -186,6 +188,22 @@ class _DetailPage extends State<DetailPage>{
               await Notifications.setMessageStatusByID(
                 _msgID,
                 "accept"
+              );
+
+              Navigator.of(context).push(
+                PopupDialog(
+                  context, 
+                  "Уведомление", 
+                  "Вы успешно согласились", 
+                  "Ок", 
+                  (){
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                )
               );
 
               setState(() {

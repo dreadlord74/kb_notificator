@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:kb_notificator/CustomTheme.dart';
+import 'package:kb_notificator/CustomTheme.dart';
+import 'package:kb_notificator/archive/allMessages.dart';
 import 'package:kb_notificator/detailPage/DetailPage.dart';
 import 'package:kb_notificator/detailPage/decline.dart';
 import 'package:kb_notificator/home/HomePage.dart';
@@ -10,12 +11,11 @@ class Notificator extends StatelessWidget{
 	Widget build(ctx){
 		return MaterialApp(
 			title: "К&Б - оповещение водителей",
-			// theme: CurstomTheme().getTheme(),
+			theme: CurstomTheme().getTheme(),
       initialRoute: '/',
 			routes: {
         "/": (ctx) => HomePage(),
         "settings": (ctx) => Settings(),
-        "decline": (ctx) => Settings(),
 			},
 			onGenerateRoute: (routeSettings){
 				final List<String> _path = routeSettings.name.split("/");
@@ -40,6 +40,13 @@ class Notificator extends StatelessWidget{
           case "decline":
             return MaterialPageRoute(
               builder: (BuildContext context) => Decline(int.parse(_path[2])),
+              settings: routeSettings
+            );
+          break;
+
+          case "allMessages":
+            return MaterialPageRoute(
+              builder: (BuildContext context) => AllMessages(),
               settings: routeSettings
             );
 				}
