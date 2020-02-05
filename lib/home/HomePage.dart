@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kb_notificator/CustomTheme.dart';
 import 'package:kb_notificator/appBar/AppBarType.dart';
 import 'package:kb_notificator/appBar/customAppBar.dart';
 import 'package:kb_notificator/firstLaunchPlaceholder/fsPlaceholder.dart';
@@ -46,7 +45,10 @@ class _HomePage extends State<HomePage>{
     List<NotificationMessage> _messages;
 
     Notifications.getMessages().then((value){
-      if (value == null) return;
+      if (value.length == 0) {
+        appBarType = AppBarType.transparent;
+        return;
+      }
 
       _messages = value;
 
@@ -95,7 +97,11 @@ class _HomePage extends State<HomePage>{
     });
 
     Notifications.getMessages().then((value){
-      if (value == null) return;
+      if (value.length == 0){
+        appBarType = AppBarType.transparent;
+        return;
+      }
+
       setState(() {
         messages = value;
         appBarType = AppBarType.white;
@@ -239,6 +245,8 @@ class _HomePage extends State<HomePage>{
 	}
 
   ListView _getMessagesContainer(){
+    print(messages[0].status);
+    print("${messages[0].receiveTime.hour}:${messages[0].receiveTime.minute}");
     return ListView(
       padding: EdgeInsets.symmetric(vertical: 9, horizontal: 0),
       children: ListTile.divideTiles(
@@ -300,56 +308,56 @@ class _HomePage extends State<HomePage>{
     );
   }
 
-	Icon _getNotificationIconByStatus(String status){
-    print(status);
-		switch (status){
-      case "accept":
-        return Icon(
-					Icons.check,
-					color: Colors.white,
-				);
+	// Icon _getNotificationIconByStatus(String status){
+  //   print(status);
+	// 	switch (status){
+  //     case "accept":
+  //       return Icon(
+	// 				Icons.check,
+	// 				color: Colors.white,
+	// 			);
 
-      break;
+  //     break;
 
-      case "decline":
-        return Icon(
-					Icons.cancel,
-					color: Colors.white,
-				);
+  //     case "decline":
+  //       return Icon(
+	// 				Icons.cancel,
+	// 				color: Colors.white,
+	// 			);
       
-      break;
+  //     break;
 
-			default:
-        return Icon(
-					Icons.message,
-					color: Colors.white,
-				);
-		}
-	}
+	// 		default:
+  //       return Icon(
+	// 				Icons.message,
+	// 				color: Colors.white,
+	// 			);
+	// 	}
+	// }
 
-	ListTile _getNotificationListItem(NotificationMessage message){
-		return ListTile(
-			leading: CircleAvatar(
-				backgroundColor: CurstomTheme().getTheme().primaryColor,
-				child: _getNotificationIconByStatus(message.status),
-			),
-			title: Text(message.title),
-			subtitle: Text(
-				message.body,
-				maxLines: 1,
-				softWrap: true,
-				overflow: TextOverflow.ellipsis,
-			),
-			onTap: (){
-				Navigator.pushNamed(context, "/listDetail/${message.id}");
-			},
-			onLongPress: () async{
-				var res = await Notifications.removeMessageByID(message.id);
+	// ListTile _getNotificationListItem(NotificationMessage message){
+	// 	return ListTile(
+	// 		leading: CircleAvatar(
+	// 			backgroundColor: CurstomTheme().getTheme().primaryColor,
+	// 			child: _getNotificationIconByStatus(message.status),
+	// 		),
+	// 		title: Text(message.title),
+	// 		subtitle: Text(
+	// 			message.body,
+	// 			maxLines: 1,
+	// 			softWrap: true,
+	// 			overflow: TextOverflow.ellipsis,
+	// 		),
+	// 		onTap: (){
+	// 			Navigator.pushNamed(context, "/listDetail/${message.id}");
+	// 		},
+	// 		onLongPress: () async{
+	// 			var res = await Notifications.removeMessageByID(message.id);
 
-				if (res == 1)
-					_getMessages();
+	// 			if (res == 1)
+	// 				_getMessages();
 				
-			},
-		);
-	}
+	// 		},
+	// 	);
+	// }
 }

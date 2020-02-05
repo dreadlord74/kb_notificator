@@ -11,8 +11,6 @@ class Notifications{
 
     await Notifications.declineAnotherMessagesStatus();
 
-    print(msg.receiveTime);
-
     var result = await _db.rawInsert(
       "INSERT INTO Messages (title, body, messageSendTime, messageReceiveTime, status)"
       " VALUES ('${msg.title}', '${msg.body}', '${msg.sendTime}', '${msg.receiveTime}', '${msg.status}')"
@@ -73,12 +71,12 @@ class Notifications{
 
   static changeMessageStatusByID(int messageID, String newStatus) async{
     final Database _db = await DBProvider.db.database;
-
-    return await _db.rawUpdate(
+    var res = await _db.rawUpdate(
       "UPDATE Messages "
       "SET status='$newStatus' "
       "WHERE id='$messageID'"
     );
+    return res;
   }
 
   static Future<List<NotificationMessage>> getMessages() async {
@@ -141,7 +139,6 @@ class Notifications{
     var _messages = await Notifications.getMessages();
 
     _messages.forEach((msg) async{
-
       if (msg.status == "waiting")
         await Notifications.setMessageStatusByID(msg.id, "decline", "", true);
     });

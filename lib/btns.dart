@@ -73,3 +73,74 @@ class _BorderedBtn extends State<BorderedBtn>{
     );
   }
 }
+
+
+
+
+
+
+class WhiteBtn extends StatefulWidget{
+  final String _text;
+  final Function _onPressed;
+
+  WhiteBtn(
+    this._text,
+    this._onPressed
+  );
+
+  @override
+  State<WhiteBtn> createState() {
+    return _WhiteBtn(_text, _onPressed);
+  }
+}
+
+class _WhiteBtn extends State<WhiteBtn>{
+  Color _bgColor = Colors.white;
+  Color _textColor = Color(0xFFADAEB5);
+
+  String _text;
+  Function _onPressed;
+
+  _WhiteBtn(
+    this._text,
+    this._onPressed
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+      onPressed: _onPressed,
+      child: Text(
+        _text,
+        style: TextStyle(
+          color: _textColor,
+          fontSize: 12.0,
+        ),
+      ),
+      color: _bgColor,
+      elevation: 0,
+      hoverElevation: 0,
+      focusElevation: 0,
+      highlightElevation: 0,
+      disabledElevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(5.0)
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(18, 11, 19, 12),
+      onHighlightChanged: (bool state){
+        if (state)
+          setState(() {
+            _bgColor = Color(0xFFE42313);
+            _textColor = Colors.white;
+          });
+        else
+          setState(() {
+            _bgColor = Colors.white;
+            _textColor = Color(0xFFADAEB5);
+          });
+      }
+    );
+  }
+}

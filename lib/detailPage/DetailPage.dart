@@ -1,8 +1,8 @@
-// import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:kb_notificator/CustomTheme.dart';
 import 'package:kb_notificator/appBar/AppBarType.dart';
 import 'package:kb_notificator/appBar/customAppBar.dart';
+import 'package:kb_notificator/btns.dart';
 import 'package:kb_notificator/notofications/notification.dart';
 import 'package:kb_notificator/notofications/notifications.dart';
 
@@ -29,6 +29,18 @@ class _DetailPage extends State<DetailPage>{
     _pageTitle = _currentMessage.title;
 
     return _currentMessage;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    Notifications.getMessageByID(_msgID).then((msg){
+      setState(() {
+        _currentMessage = msg;
+        _pageTitle = _currentMessage.title;
+      });
+    });
   }
 
   @override
@@ -59,97 +71,108 @@ class _DetailPage extends State<DetailPage>{
           context, 
           AppBarType.white,
           true,
-          false,
+          true,
           _pageTitle
         ),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 22),
-          child: FutureBuilder(
-            builder: (ctx, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done)
-                return Container();
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    _currentMessage.title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  SizedBox(
-                    height: 22,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Color(0xFF0000000d)
+        body: _currentMessage != null
+              ? Container(
+                height: double.infinity,
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 25, horizontal: 22),
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      width: double.infinity,
+                      child: Text(
+                        _currentMessage.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        bottom: BorderSide(
-                          color: Color(0xFF0000000d)
+                        textAlign: TextAlign.left,
+                      )
+                    ),
+                    SizedBox(
+                      height: 22,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: Color(0x0D000000)
+                          ),
+                          bottom: BorderSide(
+                            color: Color(0x0D000000)
+                          ),
                         ),
                       ),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              right: 16
-                            ),
-                            child: Image.asset(
-                              "assets/ico-location.png",
-                              width: 10,
-                              height: 14,
-                            ),
-                          ),
-                          flex: 1,
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              right: 16
-                            ),
-                            child: Text(
-                              _currentMessage.body,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                height: 16 / 12
+                      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: 16
+                              ),
+                              child: Image.asset(
+                                "assets/ico-location.png",
+                                width: 10,
+                                height: 14,
                               ),
                             ),
+                            flex: 0,
                           ),
-                          flex: 2
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Container(
-                            child: Text(
-                              "${_currentMessage.receiveTime.hour}:${_currentMessage.receiveTime.minute}"
+                          Expanded(
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: 16
+                              ),
+                              child: Text(
+                                _currentMessage.body,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  height: 16 / 12
+                                ),
+                              ),
                             ),
+                            flex: 2
                           ),
-                        )
-                      ],
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(
+                                (_currentMessage.receiveTime.day.toString().length == 1
+                                  ? "0${_currentMessage.receiveTime.day}"
+                                  : _currentMessage.receiveTime.day.toString())
+                                +"."+
+                                (_currentMessage.receiveTime.month.toString().length == 1
+                                  ? "0${_currentMessage.receiveTime.month}"
+                                  : _currentMessage.receiveTime.month.toString())
+                                +" "+
+                                "${_currentMessage.receiveTime.hour}:${_currentMessage.receiveTime.minute}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFFAEAEAE)
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 27,
-                  ),
-                  _getMessageButtons()
-                ],
-              );
-            },
-            future: _setCurMessage(),
-          )
+                    SizedBox(
+                      height: 27,
+                    ),
+                    _getMessageButtons()
+                  ],
+                ),
+              )
+            : Container()
         )
-      )
       ]
     );
   }
@@ -159,33 +182,23 @@ class _DetailPage extends State<DetailPage>{
       return 
         Row(
           children: <Widget>[
-            Flexible(
-              flex: 1,
-              child: FlatButton(
-                child: Text(
-                  "Принять",
-                  style: TextStyle(
-                    color: Colors.white
-                  ),
-                ),
-                onPressed: () async {
+            BorderedBtn("Принять", () async {
+              await Notifications.setMessageStatusByID(
+                _msgID,
+                "accept"
+              );
 
-                  await Notifications.setMessageStatusByID(
-                    _msgID,
-                    "accept"
-                  );
-
-                  setState(() {
-                    _setCurMessage();
-                  });
-                },
-                color: CurstomTheme().getTheme().primaryColor,
-              ),
-            ),
+              setState(() {
+                _setCurMessage();
+              });
+            }),
             SizedBox(
               width: 15,
             ),
-            Flexible(
+            WhiteBtn("Отказаться", (){
+              Navigator.pushNamed(context, "/decline/${_currentMessage.id}");
+            })
+            /*Flexible(
               flex: 1,
               child: FlatButton(
                 child: Text(
@@ -250,7 +263,7 @@ class _DetailPage extends State<DetailPage>{
                 },
                 color: Color(0XFFDBDBDB),
               ),
-            ),
+            ),*/
           ],
         );
 
