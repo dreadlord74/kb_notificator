@@ -259,11 +259,11 @@ class _HomePage extends State<HomePage>{
           height: 36.0,
         ),
         title: Text(
-          "Последняя заявка",
+          "У вас новое сообщение",
           style: TextStyle(
             color: Colors.black,
             fontSize: 14,
-            fontWeight: FontWeight.w400
+            fontWeight: FontWeight.bold
           ),
         ),
         trailing: Image.asset(
