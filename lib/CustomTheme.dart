@@ -5,6 +5,7 @@ class CurstomTheme{
     return ThemeData(
       primaryColor: const Color(0xFFBE1010),
       accentColor: const Color(0xFFBE1010),
+      fontFamily: "Nunito"
     );
   }
 }

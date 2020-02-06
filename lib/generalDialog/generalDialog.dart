@@ -85,6 +85,7 @@ class PopupDialog extends ModalRoute<void>{
                   fontWeight: FontWeight.bold,
                   height: 22 / 18,
                 ),
+                textAlign: TextAlign.center,
               ),
               SizedBox(
                 height: 45,
