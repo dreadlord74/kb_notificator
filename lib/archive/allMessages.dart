@@ -106,7 +106,8 @@ class _AllMessages extends State<AllMessages>{
     List<Container> _list = [];
 
     _messages.forEach((msg){
-      _list.add(_getMessage(msg));
+      if (msg.status != "waiting")
+        _list.add(_getMessage(msg));
     });
 
     return _list;
